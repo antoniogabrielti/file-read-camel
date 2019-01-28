@@ -1,0 +1,5 @@
+codigo_produto;quantidade_em_estoque
+001;800
+002;976
+503;1433
+504;1433

@@ -1,0 +1,4 @@
+codigo_produto;valor_produto;quantidade_vendida
+001;5.90;100
+002;15.20;400
+903;0.8;55
