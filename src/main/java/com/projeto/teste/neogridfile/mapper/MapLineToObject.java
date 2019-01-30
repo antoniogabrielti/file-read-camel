@@ -1,7 +1,8 @@
 package com.projeto.teste.neogridfile.mapper;
 
-import com.google.common.base.Function;
+import org.springframework.core.convert.converter.Converter;
 
-public interface MapLineToObject<T> {
-    Function<String, T> getFunction();
+import java.util.List;
+
+public interface MapLineToObject<T> extends Converter<String,T> {
 }

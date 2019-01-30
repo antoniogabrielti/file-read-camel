@@ -1,43 +1,31 @@
 package com.projeto.teste.neogridfile.mapper;
 
-import com.google.common.base.Function;
 import com.google.common.base.Splitter;
-import com.projeto.teste.neogridfile.dto.Cadastro;
+import com.projeto.teste.neogridfile.dto.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class MapLineToCadastro implements MapLineToObject<Cadastro> {
+public class MapLineToCadastro implements MapLineToObject<Produto> {
 
-    private Cadastro cadastro;
+    private Produto produto;
 
     @Autowired
-    public MapLineToCadastro(Cadastro cadastro) {
-        this.cadastro = cadastro;
+    public MapLineToCadastro(Produto produto) {
+        this.produto = produto;
     }
 
-    public Function<String, Cadastro> getFunction() {
+    @Override
+    public Produto convert(String line) {
 
-        Function<String, Cadastro> map = createFunction();
-        return map;
+        List<String> produtosLine = Splitter.on(";").trimResults()
+                .omitEmptyStrings().splitToList(line);
+
+        produto = new Produto();
+        produto.setCodigo(Integer.parseInt(produtosLine.get(0)));
+        produto.setDescricao(produtosLine.get(1));
+        return produto;
     }
-
-    private Function<String, Cadastro> createFunction() {
-        return new Function<String, Cadastro>() {
-
-                public Cadastro apply(String line) {
-
-                    List<String> produtos = Splitter.on(";").trimResults()
-                            .omitEmptyStrings().splitToList(line);
-
-                    cadastro.setCodigoProduto(Integer.parseInt(produtos.get(0)));
-                    cadastro.setDescricaoProduto(produtos.get(1));
-
-                    return cadastro;
-                }
-            };
-    }
-
 }

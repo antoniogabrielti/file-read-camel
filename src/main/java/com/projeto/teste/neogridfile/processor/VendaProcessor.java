@@ -2,9 +2,12 @@ package com.projeto.teste.neogridfile.processor;
 
 import com.projeto.teste.neogridfile.dto.Venda;
 import com.projeto.teste.neogridfile.mapper.MapLineToObject;
+import com.projeto.teste.neogridfile.mapper.MapLineToVenda;
 import org.apache.camel.Exchange;
+import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,29 +16,29 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-public class VendaProcessor implements Processor {
+@Component
+public class VendaProcessor implements Predicate {
 
     private MapLineToObject<Venda> mapLineToVenda;
 
     @Autowired
-    public VendaProcessor(MapLineToObject mapLineToVenda) {
+    public VendaProcessor(MapLineToVenda mapLineToVenda) {
         this.mapLineToVenda = mapLineToVenda;
     }
 
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public boolean matches(Exchange exchange) {
         File file =  exchange.getIn().getBody(File.class);
 
         String fileName = exchange.getIn().getHeader("CamelFileName").toString();
 
         if(idempotency(fileName)){
-            List<Venda> vendas = readProdutos(file);
+//            List<Venda> vendas = readProdutos(file);
 
 
         }
 
-
+        return true;
 
     }
 
@@ -46,6 +49,6 @@ public class VendaProcessor implements Processor {
     private List<Venda> readProdutos(File file) throws IOException {
         return Files
                 .lines(Paths.get(file.getAbsolutePath())).skip(1)
-                .map(mapLineToVenda.getFunction()).collect(Collectors.toList());
+                .map(line -> mapLineToVenda.convert(line)).collect(Collectors.toList());
     }
 }
