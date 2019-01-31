@@ -45,10 +45,9 @@ public class CadastroProcessor implements Predicate {
         String fileName = exchange.getIn().getHeader("CamelFileName").toString();
 
         if(idempotency(fileName)){
-            List<Produto> produtos = null;
 
             try {
-                produtos = readProdutos(file);
+                List<Produto> produtos = readProdutos(file);
                 produtos.forEach(this::saveProduto);
                 return true;
             } catch (IOException e) {

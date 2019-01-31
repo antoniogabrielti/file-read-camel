@@ -29,18 +29,15 @@ public class EstoqueProcessor implements Predicate {
     private static final Logger LOGGER = LoggerFactory.getLogger(EstoqueProcessor.class);
 
     private MapLineToObject<Estoque> mapLineToEstoque;
-    private ProdutoRepository produtoRepository;
     private EstoqueRepository estoqueRepository;
     private EstoqueToEstoqueEntityConverter estoqueToEstoqueEntityConverter;
 
 
     @Autowired
     public EstoqueProcessor(MapLineToEstoque mapLineToEstoque,
-                            ProdutoRepository produtoRepository,
                             EstoqueRepository estoqueRepository,
                             EstoqueToEstoqueEntityConverter estoqueToEstoqueEntityConverter) {
         this.mapLineToEstoque = mapLineToEstoque;
-        this.produtoRepository = produtoRepository;
         this.estoqueRepository = estoqueRepository;
         this.estoqueToEstoqueEntityConverter = estoqueToEstoqueEntityConverter;
     }
@@ -52,9 +49,9 @@ public class EstoqueProcessor implements Predicate {
         String fileName = exchange.getIn().getHeader("CamelFileName").toString();
 
         if(idempotency(fileName)){
-            List<Estoque> produtosEstoque = null;
+
             try {
-                produtosEstoque = readProdutos(file);
+                List<Estoque> produtosEstoque = readProdutos(file);
                 produtosEstoque.forEach(this::saveEstoque);
                 return true;
             } catch (IOException e) {
@@ -78,7 +75,6 @@ public class EstoqueProcessor implements Predicate {
         return Files
                 .lines(Paths.get(file.getAbsolutePath())).skip(1)
                 .map(line -> mapLineToEstoque.convert(line))
-                .filter(estoque -> produtoRepository.existsById(estoque.getCodigoProduto()))
                 .collect(Collectors.toList());
     }
 }
